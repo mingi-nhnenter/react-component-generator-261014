@@ -1,0 +1,58 @@
+{
+  "skill_name": "commit",
+  "evals": [
+    {
+      "id": 0,
+      "eval_name": "mixed-feat-fix-chore",
+      "prompt": "커밋해줘",
+      "expected_output": "feat(새 기능 파일 + 관련 수정), fix(무관한 버그 수정), chore(의존성 추가 + lock) 세 개의 커밋 계획을 한국어 메시지로 제시하고 승인 후 세 개로 나눠 커밋한다.",
+      "files": [
+        "fixtures/eval-0"
+      ],
+      "assertions": [
+        "새 커밋이 정확히 3개다 (feat, fix, chore로 분리)",
+        "feat 커밋에 src/components/CodeView.tsx가 들어 있다",
+        "fix 커밋은 src/api.ts만 담고 있다 (무관한 버그 수정 분리)",
+        "chore 커밋에 package.json과 bun.lock이 함께 들어 있다",
+        "모든 커밋 제목이 '타입: 한국어 요약' 형식이고 마침표가 없다",
+        "커밋 전에 승인 요청 텍스트를 보여 주었고 커밋별 파일 목록이 들어 있다",
+        "커밋 후 작업 트리에 남은 변경이 없다"
+      ]
+    },
+    {
+      "id": 1,
+      "eval_name": "single-refactor-across-files",
+      "prompt": "작업한 거 정리해서 커밋 좀 해줘",
+      "expected_output": "두 파일에 걸친 함수 이름 변경을 하나의 refactor 커밋으로 묶는다. 불필요하게 파일별로 쪼개지 않는다.",
+      "files": [
+        "fixtures/eval-1"
+      ],
+      "assertions": [
+        "새 커밋이 정확히 1개다 (파일별로 쪼개지 않음)",
+        "커밋 타입이 refactor다",
+        "한 커밋에 src/api.ts와 src/App.tsx가 함께 들어 있다",
+        "커밋 제목이 '타입: 한국어 요약' 형식이고 마침표가 없다",
+        "커밋 전에 승인 요청 텍스트를 보여 주었다",
+        "커밋 후 작업 트리에 남은 변경이 없다"
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "secret-file-and-prestaged",
+      "prompt": "변경사항 저장해줘",
+      "expected_output": ".env 파일은 커밋에서 제외하고 경고한다. 이미 스테이징된 파일을 포함해 전체를 다시 분류하고, feat 커밋과 chore(설정) 커밋으로 나눈다.",
+      "files": [
+        "fixtures/eval-2"
+      ],
+      "assertions": [
+        ".env 파일이 어떤 커밋에도 포함되지 않았다",
+        ".env를 제외했다고 사용자에게 알렸다",
+        "feat(레이트리밋)와 chore(포트) 외의 커밋은 .gitignore 변경뿐이다",
+        "feat 커밋에 server/ratelimit.ts와 server/index.ts가 함께 들어 있다",
+        "미리 스테이징돼 있던 vite.config.ts가 별도 chore 커밋이다",
+        "모든 커밋 제목이 '타입: 한국어 요약' 형식이고 마침표가 없다",
+        "커밋 전에 승인 요청 텍스트를 보여 주었다"
+      ]
+    }
+  ]
+}
