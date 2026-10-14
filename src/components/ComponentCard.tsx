@@ -13,12 +13,23 @@ interface ComponentCardProps {
 type Tab = 'preview' | 'code';
 
 export function ComponentCard({ component, onRemove, onRegenerate, isLoading }: ComponentCardProps) {
-  const [activeTab, setActiveTab] = useState<Tab>('preview');
+  const [activeTab, setActiveTab] = useState<Tab>(component.isStreaming ? 'code' : 'preview');
   const [previewKey, setPreviewKey] = useState(0);
+  const [prevStreaming, setPrevStreaming] = useState(component.isStreaming);
   const createdAt = component.createdAt.toLocaleTimeString('ko-KR', {
     hour: '2-digit',
     minute: '2-digit',
   });
+
+  // 스트리밍 상태가 바뀌는 렌더에서만 탭을 바꾼다. 시작하면 코드 탭에서 생성 과정을 보여 주고,
+  // 끝나면 미리보기로 넘어간다. 사용자가 직접 고른 탭은 그 사이에는 유지된다.
+  // (effect 대신 렌더 중 상태 조정: 추가 렌더 한 번으로 끝나고 깜빡임이 없다.)
+  if (component.isStreaming !== prevStreaming) {
+    setPrevStreaming(component.isStreaming);
+    setActiveTab(component.isStreaming ? 'code' : 'preview');
+  }
+
+  const busy = isLoading || component.isStreaming;
 
   return (
     <div className="component-card">
@@ -33,15 +44,16 @@ export function ComponentCard({ component, onRemove, onRegenerate, isLoading }: 
             onClick={() => setPreviewKey((k) => k + 1)}
             title="미리보기 새로고침"
             aria-label="미리보기 새로고침"
+            disabled={component.isStreaming}
           >
             ↻
           </button>
           <button
             className="btn-regenerate"
             onClick={() => onRegenerate(component.prompt)}
-            disabled={isLoading}
+            disabled={busy}
           >
-            {isLoading ? '생성 중...' : '재생성'}
+            {busy ? '생성 중...' : '재생성'}
           </button>
           <button
             className="btn-remove"
@@ -69,7 +81,7 @@ export function ComponentCard({ component, onRemove, onRegenerate, isLoading }: 
         {activeTab === 'preview' ? (
           <LivePreview key={previewKey} code={component.code} />
         ) : (
-          <CodeView code={component.code} />
+          <CodeView code={component.code} isStreaming={component.isStreaming} />
         )}
       </div>
     </div>

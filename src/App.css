@@ -717,3 +717,20 @@
     padding: 18px;
   }
 }
+
+/* 스트리밍 중 코드 끝에 깜빡이는 커서 */
+.code-caret {
+  display: inline-block;
+  width: 0.6ch;
+  height: 1.1em;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  background: currentColor;
+  animation: caret-blink 1s steps(2, start) infinite;
+}
+
+@keyframes caret-blink {
+  to {
+    visibility: hidden;
+  }
+}
